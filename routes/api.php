@@ -1,10 +1,10 @@
 <?php
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CodeController;
 use App\Http\Controllers\ChatController;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => 'auth:user',
+    //'middleware' => 'auth:user',
     'prefix' => 'admin',
     'controller' => AuthController::class
 ], function () {
