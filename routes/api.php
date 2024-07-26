@@ -25,7 +25,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::group([
-    'middleware' => 'auth:api',
+    'middleware' => 'authenticate',
     'prefix' => 'codes',
     'controller' => CodeController::class
 ], function () {
@@ -35,11 +35,19 @@ Route::group([
     //Route::get('/download/{id}', 'download');
 });
 Route::group([
-    'middleware' => 'auth:api',
+    'middleware' => 'authenticate',
     'prefix' => 'chats',
     'controller' => ChatController::class
 ], function () {
     Route::get('/', 'listAll'); 
     Route::get('/{id}', 'show'); 
     Route::post('/', 'store'); 
+});
+
+Route::group([
+    'middleware' => 'auth:user',
+    'prefix' => 'admin',
+    'controller' => AuthController::class
+], function () {
+    Route::post('import-users', 'import');
 });

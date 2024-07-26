@@ -5,7 +5,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 class AuthController extends Controller
 {
  
@@ -88,4 +92,33 @@ class AuthController extends Controller
         ]);
     }
 
+
+    public function import(Request $request)
+        {
+   
+    $request->validate([
+        'file' => 'required|file|mimes:xlsx,csv',
+    ]);
+
+    try {
+        
+        Excel::import(new UsersImport, $request->file('file'));
+
+        
+        Session::flash('success', 'Users imported successfully!');
+        return Redirect::back();
+    } catch (ValidationException $e) {
+        $failures = $e->failures();
+
+        $messages = collect($failures)->map(function ($failure) {
+            $row = $failure->row(); 
+            $attribute = $failure->attribute();
+            $errors = implode(', ', $failure->errors());
+            return "Row $row, Column $attribute: $errors";
+        })->toArray();
+
+        
+        return Redirect::back()->withErrors($messages);
+    }
+}
 }
