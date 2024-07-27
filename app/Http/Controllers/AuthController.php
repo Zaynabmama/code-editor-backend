@@ -5,11 +5,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Imports\UsersImport;
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use App\Imports\UsersImport;
+
+
+
 class AuthController extends Controller
 {
  

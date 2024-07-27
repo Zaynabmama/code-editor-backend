@@ -25,27 +25,33 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::group([
-    'middleware' => 'authenticate',
+    'middleware' => 'auth',
     'prefix' => 'codes',
     'controller' => CodeController::class
 ], function () {
     Route::get('/', 'index');
-    Route::get('/{id}', 'show');
+    Route::get('/{id}', 'readCode');
     Route::post('/', 'store');
+    Route::get('/download/{filename}', 'downloadCode');
+    
+    
     //Route::get('/download/{id}', 'download');
 });
+//'middleware' => 'auth',
+
 Route::group([
-    'middleware' => 'authenticate',
+    'middleware' => 'auth',
     'prefix' => 'chats',
     'controller' => ChatController::class
 ], function () {
-    Route::get('/', 'listAll'); 
+    Route::get('/', 'listAll');  
     Route::get('/{id}', 'show'); 
     Route::post('/', 'store'); 
 });
 
 Route::group([
     //'middleware' => 'auth:user',
+    'middleware' => 'auth',
     'prefix' => 'admin',
     'controller' => AuthController::class
 ], function () {
