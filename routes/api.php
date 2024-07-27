@@ -25,7 +25,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::group([
-    'middleware' => 'auth',
+    'middleware' => 'authenticate',
     'prefix' => 'codes',
     'controller' => CodeController::class
 ], function () {
@@ -40,7 +40,7 @@ Route::group([
 //'middleware' => 'auth',
 
 Route::group([
-    'middleware' => 'auth',
+    'middleware' => 'authenticate',
     'prefix' => 'chats',
     'controller' => ChatController::class
 ], function () {
@@ -48,10 +48,18 @@ Route::group([
     Route::get('/{id}', 'show'); 
     Route::post('/', 'store'); 
 });
+Route::group([
+    'middleware' => 'authenticate',
+    'prefix' => 'users',
+    'controller' => AuthController::class
+], function () {
+    Route::get('search', 'searchByName');
+    Route::get('list', 'listAllUsers');
+});
 
 Route::group([
     //'middleware' => 'auth:user',
-    'middleware' => 'auth',
+    'middleware' => 'auth.user',
     'prefix' => 'admin',
     'controller' => AuthController::class
 ], function () {

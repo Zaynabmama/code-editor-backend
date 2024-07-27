@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -27,6 +28,7 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
+            
         ]);
         $credentials = $request->only('email', 'password');
 
@@ -55,12 +57,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+           // 'user_role' => 'required|string',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            //'user_role' => $request->user_role,
         ]);
 
         $token = Auth::login($user);
@@ -108,9 +112,9 @@ class AuthController extends Controller
         
         Excel::import(new UsersImport, $request->file('file'));
 
-        
-        Session::flash('success', 'Users imported successfully!');
-        return Redirect::back();
+        return response()->json(['success' => 'Users imported successfully!'], 200);
+        //Session::flash('success', 'Users imported successfully!');
+        //return Redirect::back();
     } catch (ValidationException $e) {
         $failures = $e->failures();
 
@@ -122,7 +126,40 @@ class AuthController extends Controller
         })->toArray();
 
         
-        return Redirect::back()->withErrors($messages);
+        //return Redirect::back()->withErrors($messages);
+        return response()->json(['errors' => $messages], 422);
+    }  catch (\Exception $e) {
+        Log::error('General Exception:', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json(['errors' => ['Unexpected error occurred.']], 500);
     }
+    }
+    public function searchByName(Request $request)
+   {
+    $request->validate([
+        'name' => 'required|string',
+    ]);
+
+    $name = $request->input('name');
+    $users = User::where('name', 'LIKE', "%$name%")->get();
+
+    return response()->json([
+        'status' => 'success',
+        'users' => $users,
+    ]);
 }
+       public function listAllUsers()
+       {
+         $users = User::all();
+
+           return response()->json([
+           'status' => 'success',
+          'users' => $users,
+        ]);
+}
+
+
 }

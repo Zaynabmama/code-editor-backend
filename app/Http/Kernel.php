@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http;
+use App\Http\Middleware\AuthenticateMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -55,7 +56,9 @@ class Kernel extends HttpKernel
     protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        //'auth.user' => UserMiddleware::class,
         'auth.user' => UserMiddleware::class,
+        'authenticate' => AuthenticateMiddleware::class,
         
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,

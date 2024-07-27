@@ -4,8 +4,11 @@ namespace App\Imports;
 
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Illuminate\Validation\Rule;
 
-class UsersImport implements ToModel
+
+class UsersImport implements ToModel, WithValidation
 {
     /**
     * @param array $row
@@ -23,13 +26,21 @@ class UsersImport implements ToModel
         
     }
     
-            public function rules(): array
-               {
-            return [
-                '0' => 'required|string|max:255',
-                '1' => 'required|string|email|max:255|unique:users',
+        //    public function rules(): array
+        //       {
+        //    return [
+        //        '0' => 'required|string|max:255',
+         //       '1' => 'required|string|email|max:255|unique:users',
                
-                '2' => 'required|string|min:6',
+       //         '2' => 'required|string|min:6',
+      //      ];
+     //   }
+        public function rules(): array
+        {
+            return [
+                '*.0' => 'required|string|max:255',
+                '*.1' => 'required|string|email|max:255|unique:users,email',
+                '*.2' => 'required|string|min:6',
             ];
         }
     
