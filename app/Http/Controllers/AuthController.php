@@ -112,8 +112,11 @@ class AuthController extends Controller
         
         Excel::import(new UsersImport, $request->file('file'));
 
-        return response()->json(['success' => 'Users imported successfully!'], 200);
-        //Session::flash('success', 'Users imported successfully!');
+        return response()->
+        json(['success' =>
+         'Users imported successfully!']
+         , 200);
+        
         //return Redirect::back();
     } catch (ValidationException $e) {
         $failures = $e->failures();
@@ -122,7 +125,7 @@ class AuthController extends Controller
             $row = $failure->row(); 
             $attribute = $failure->attribute();
             $errors = implode(', ', $failure->errors());
-            return "Row $row, Column $attribute: $errors";
+            return "$errors : at row $row and col $attribute";
         })->toArray();
 
         
@@ -159,6 +162,48 @@ class AuthController extends Controller
            'status' => 'success',
           'users' => $users,
         ]);
+}
+public function updateUser(Request $request, $id)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+    ]);
+
+    $user = User::find($id);
+
+ 
+    $user->name = $request->input('name');
+    $user->email = $request->input('email');
+
+    $user->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'User updated successfully',
+        'user' => $user,
+    ]);
+}
+public function deleteUser(Request $request, $id)
+{
+   
+    if (Auth::id() == $id) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'You cannot delete your own account',
+        ], 403);
+    }
+
+   
+    $user = User::find($id);
+
+   
+    $user->delete();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'User deleted successfully',
+    ]);
 }
 
 

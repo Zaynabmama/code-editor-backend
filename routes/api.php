@@ -64,4 +64,6 @@ Route::group([
     'controller' => AuthController::class
 ], function () {
     Route::post('import-users', 'import');
+    Route::put('{id}', 'updateUser');
+    Route::delete('{id}', 'deleteUser');
 });
