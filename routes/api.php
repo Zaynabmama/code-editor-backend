@@ -60,12 +60,13 @@ Route::group([
     Route::get('search', 'searchByName');
     Route::get('list', 'listAllUsers');
 });
+//Route::post('/copilot/suggestions', [OpenAIController::class, 'generateCompletion']);
 Route::group([
-    'middleware' => 'authenticate', 
+    //'middleware' => 'authenticate', 
      'prefix' => 'openai',
      'controller' => OpenAIController::class
      ], function () {
-    Route::post('generate-completion', 'generateCompletion');
+    Route::post('/copilot/suggestions', 'getSuggestions');
  });
 
 Route::group([

@@ -7,28 +7,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\OpenAIService;
 use Illuminate\Support\Facades\Log;
-
+use GuzzleHttp\Client;
 class OpenAIController extends Controller
 {
-    protected $openAIService;
+// app/Http/Controllers/CopilotController.php
 
-    public function __construct(OpenAIService $openAIService)
+    public function getSuggestions(Request $request)
     {
-        $this->openAIService = $openAIService;
-    }
-
-    public function generateCompletion(Request $request)
-    {
-        $validated = $request->validate([
-            'prompt' => 'required|string',
+        $code = $request->input('code');
+        $client = new Client();
+        $response = $client->post('https://api.copilot.url/suggestions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('COPILOT_API_KEY'),
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'code' => $code,
+            ],
         ]);
 
-        try {
-            $response = $this->openAIService->getCompletion($validated['prompt']);
-            return response()->json($response);
-        } catch (\Exception $e) {
-            Log::error('Error generating completion: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to get completion'], 500);
-        }
+        return response()->json(json_decode($response->getBody(), true));
     }
 }

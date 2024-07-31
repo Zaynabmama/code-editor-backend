@@ -10,27 +10,59 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class CodeController extends Controller
 {
-    public function store(Request $request)
-    {
-        $validated_data = $request->validate([
-            'title' => 'required|string|max:255',
-            'code_content' => 'required|string',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validated_data = $request->validate([
+          
+    //         'code_content' => 'required|string',
+    //     ]);
 
-        $validated_data['user_id'] = Auth::id();
+    //     $validated_data['user_id'] = Auth::id();
 
-        $code = Code::create($validated_data);
-        $filename = 'code_' . $code->id . '.txt';
-        Storage::put('public/' . $filename, $validated_data['code_content']);
+    //     $code = Code::create($validated_data);
+    //     $filename = 'code_' . $code->id . '.txt';
+    //     Storage::put('public/' . $filename, $validated_data['code_content']);
 
 
-        return response()->json([
-            'code' => $code,
-            'file' => $filename 
-        ], 201);  
+    //     return response()->json([
+    //         'code' => $code,
+    //         'file' => $filename 
+    //     ], 201);  
        
     
-    }
+    // }
+    public function store(Request $request)
+{
+
+    $validated_data = $request->validate([
+        'code_content' => 'required|string',
+   
+    'title' => 'nullable|string',
+]);
+
+$validated_data['user_id'] = Auth::id();
+
+
+if (!isset($validated_data['title'])) {
+    $validated_data['title'] = 'Untitled';
+}
+
+    $validated_data['user_id'] = Auth::id();
+
+
+    $code = Code::create($validated_data);
+
+
+    $filename = 'code_' . $code->id . '.txt';
+    Storage::put('public/' . $filename, $validated_data['code_content']);
+
+
+    return response()->json([
+        'code' => $code,
+        'file' => $filename 
+    ], 201);  
+}
+
 
     public function readCode($id)
     {
@@ -64,7 +96,6 @@ class CodeController extends Controller
 
     public function compileCode(Request $request)
 {
-    // Validate that 'code_content' is provided in the form data
     $validated_data = $request->validate([
         'code_content' => 'required|string',
     ]);
@@ -72,24 +103,18 @@ class CodeController extends Controller
     $codeContent = $validated_data['code_content'];
 
     try {
-        // Create a temporary file for Python code execution
+
         $tempFile = tempnam(sys_get_temp_dir(), 'code') . '.py';
         file_put_contents($tempFile, $codeContent);
 
-        // Execute the Python code
-        $process = new Process(['python', $tempFile]); // Try 'python' first
+       
+        $process = new Process(['python', $tempFile]);
 $process->run();
-if (!$process->isSuccessful()) {
-    // If 'python' fails, try 'python3'
-    $process = new Process(['python3', $tempFile]);
-    $process->run();
-}
 
-        // Capture the output and errors
+
         $output = $process->getOutput();
         $errorOutput = $process->getErrorOutput();
 
-        // Clean up the temporary file
         unlink($tempFile);
 
         if (!$process->isSuccessful()) {
@@ -97,9 +122,12 @@ if (!$process->isSuccessful()) {
         }
 
         return response()->json([
-            'output' => $output // Return the actual output from Python execution
+            'output' => $output
         ], 200);
-    } catch (ProcessFailedException $exception) {
+    }     
+    
+    
+    catch (ProcessFailedException $exception) {
         return response()->json(['error' => $exception->getMessage()], 500);
     }
 }
