@@ -2,6 +2,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CodeController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\OpenAIController;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,9 @@ Route::group([
     Route::get('/{id}', 'readCode');
     Route::post('/', 'store');
     Route::get('/download/{filename}', 'downloadCode');
+    Route::post('/compile', 'compileCode');
+    //Route::post('/generate-completion', 'generateCompletion');
+    
     
     
     //Route::get('/download/{id}', 'download');
@@ -56,6 +60,13 @@ Route::group([
     Route::get('search', 'searchByName');
     Route::get('list', 'listAllUsers');
 });
+Route::group([
+    'middleware' => 'authenticate', 
+     'prefix' => 'openai',
+     'controller' => OpenAIController::class
+     ], function () {
+    Route::post('generate-completion', 'generateCompletion');
+ });
 
 Route::group([
     //'middleware' => 'auth:user',
