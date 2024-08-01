@@ -52,9 +52,12 @@ Route::group([
     'prefix' => 'chats',
     'controller' => ChatController::class
 ], function () {
-    Route::get('/', 'listAll');  
-    Route::get('/{id}', 'show'); 
-    Route::post('/', 'store'); 
+    Route::get('/{id}', 'listUserChat');
+    Route::get('/all', 'listAllChats');
+    // Route::get('/', 'listAll');  
+    // Route::get('/{id}', 'show'); 
+    // Route::post('/', 'store'); 
+    // Route::get('/{user1_id}/{user2_id}','getMessagesBetweenUsers');
 });
 Route::group([
     'middleware' => 'authenticate',
