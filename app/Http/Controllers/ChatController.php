@@ -90,7 +90,7 @@ public function listAllChats()
 
     return response()->json([
         'chats' => $chats
-    ], 200);
+    ]);
 
 }
 
