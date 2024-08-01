@@ -53,7 +53,7 @@ if (!isset($validated_data['title'])) {
     $code = Code::create($validated_data);
 
 
-    $filename = 'code_' . $code->id . '.txt';
+    $filename = 'code_' . $code->id . '.py';
     Storage::put('public/' . $filename, $validated_data['code_content']);
 
 
@@ -84,15 +84,36 @@ if (!isset($validated_data['title'])) {
 
     public function downloadCode($filename)
     {
-
+        // $user = auth()->user();
+        // if (!$user) {
+        //     return response()->json(['message' => 'Unauthorized'], 401);
+        // }
         $filePath = storage_path('app/public/' . $filename);
-
+    
         if (!file_exists($filePath)) {
-            abort(404, 'File not found.');
+            return response()->json(['error' => 'File not found.'], 404);
         }
-
+    
         return response()->download($filePath);
     }
+    
+//     public function download($id)
+// {
+//     // Find the code record by ID
+//     $code = Code::findOrFail($id);
+
+//     // Define the filename
+//     $filename = 'code_' . $id . '.txt';
+
+//     // Check if the file exists in storage
+//     if (!Storage::exists('public/' . $filename)) {
+//         return response()->json(['error' => 'File not found.'], 404);
+//     }
+
+//     // Return the file as a download response
+//     return Storage::download('public/' . $filename, $filename);
+// }
+
 
     public function compileCode(Request $request)
 {

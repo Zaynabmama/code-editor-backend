@@ -36,8 +36,12 @@ Route::group([
     Route::get('/download/{filename}', 'downloadCode');
     Route::post('/compile', 'compileCode');
     //Route::post('/generate-completion', 'generateCompletion');
-    
-    
+});   
+    Route::group([
+        'prefix' => 'codes',
+        'controller' => CodeController::class
+    ], function () {
+        Route::get('/download/{filename}', 'downloadCode');
     
     //Route::get('/download/{id}', 'download');
 });
